@@ -10,6 +10,7 @@ ENV LANG="C.UTF-8" \
     SSL_CRON="0 /2   " \
     SSL_DOMAIN="" \
     AUTO_UPDATE="false" \
+    SOURCE_COMMIT_ID="218ff73" \
     SERVER="emby"
 
 # 安装git
@@ -27,5 +28,11 @@ COPY start_server /start_server
 COPY check_certificate /check_certificate
 
 RUN chmod +x /entrypoint /start_server /check_certificate
+RUN mkdir /template
+COPY config /template/config
+COPY scripts /scripts
+RUN chmod -R +x /template /scripts 
+RUN apk add --no-cache grep
+RUN cd /embyExternalUrl && git checkout $SOURCE_COMMIT_ID
 
 ENTRYPOINT ["/bin/sh", "/entrypoint"]

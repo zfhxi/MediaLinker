@@ -1,2 +1,4 @@
 #!/bin/bash
-/bin/sh /start_server 2>&1 | tee -a /opt/MediaLinker.log
+touch /var/log/nginx/error.log
+/bin/sh /start_server 2>&1 | tee -a /opt/MediaLinker.log &
+tail -f /var/log/nginx/error.log

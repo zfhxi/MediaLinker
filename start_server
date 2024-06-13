@@ -2,10 +2,20 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2016
 # shellcheck disable=SC2154
+if [ ! -e "/config/envs" ]; then
+    cp /template/config/envs /config/envs
+fi
+
+source /config/envs
 # 自动更新
 if [[ "${AUTO_UPDATE}" = "true" ]];then
-  echo "The automatic update is detected, and the main program is being updated...."
+  echo "\n=> The automatic update is detected, and the main program is being updated..."
   cd /embyExternalUrl && git pull
+  # 如果指定了commit id，那么使用对应的代码
+  if test -n "$SOURCE_COMMIT_ID"; then
+    git checkout $SOURCE_COMMIT_ID
+    echo "Source code has been switched to commit id: $SOURCE_COMMIT_ID!"
+  fi
   echo "The main program update is complete."
 fi
 
@@ -14,52 +24,30 @@ if [ ! -e "/etc/nginx/modules/ngx_http_js_module.so" ]; then
   ln -s /usr/lib/nginx/modules/ngx_http_js_module.so /etc/nginx/modules/ngx_http_js_module.so
 fi
 
-# emby
-if [ "${SERVER}" = "emby" ]; then
-  echo "The emby service is detected, and the configuration file is being linked...."
-  # 删除原有配置文件
-  rm -rf /etc/nginx/conf.d /etc/nginx/nginx.conf
-  # 根据服务获取不同的配置文件
-  cp -rf /embyExternalUrl/emby2Alist/nginx/conf.d /etc/nginx/conf.d
-  cp -rf /embyExternalUrl/emby2Alist/nginx/nginx.conf /etc/nginx/nginx.conf
-fi
+echo "The ${SERVER} service is detected, and the configuration file is being linked...."
+# 删除原有配置文件
+rm -rf /etc/nginx/conf.d /etc/nginx/nginx.conf
+# 重新拷贝配置文件
+eval "cp -rf /embyExternalUrl/${SERVER}2Alist/nginx/conf.d /etc/nginx/conf.d"
+eval "cp -rf /embyExternalUrl/${SERVER}2Alist/nginx/nginx.conf /etc/nginx/nginx.conf"
 
-# plex
-if [ "${SERVER}" = "plex" ]; then
-  echo "The plex service is detected, and the configuration file is being linked...."
-  # 删除原有配置文件
-  rm -rf /etc/nginx/conf.d /etc/nginx/nginx.conf
-  # 根据服务获取不同的配置文件
-  cp -rf /embyExternalUrl/plex2Alist/nginx/conf.d /etc/nginx/conf.d
-  cp -rf /embyExternalUrl/plex2Alist/nginx/nginx.conf /etc/nginx/nginx.conf
-fi
-
-# 判断是否存在配置文件，不存在则创建
-if [ ! -e "/opt/constant.js" ]; then
-  echo "The configuration file is not mapped, creating a new one..."
-  if [ "${SERVER}" = "plex" ]; then
-    cp /embyExternalUrl/plex2Alist/nginx/conf.d/exampleConfig/constant-all.js /opt/constant.js
-  elif [ "${SERVER}" = "emby" ]; then
-    cp /embyExternalUrl/emby2Alist/nginx/conf.d/exampleConfig/constant-all.js /opt/constant.js
-  else
-    echo "The server is not specified, please specify the server name in the environment variable SERVER."
-    exit 1
-  fi
-fi
-
-# 软连接配置文件
-if [ ! -h "/etc/nginx/conf.d/constant.js" ]; then
-  rm -rf /etc/nginx/conf.d/constant.js
-  ln -s /opt/constant.js /etc/nginx/conf.d/constant.js
-fi
 
 # nginx日志输出到stdout
-if ! grep -q "error_log /dev/stdout info;" /etc/nginx/nginx.conf; then
-  sed -i '/pid\s*\/var\/run\/nginx.pid;/i error_log /dev/stdout info;' /etc/nginx/nginx.conf
-fi
-if ! grep -q "access_log /dev/stdout main;" /etc/nginx/nginx.conf; then
-  sed -i '/sendfile\s*on;/i\    access_log /dev/stdout main;' /etc/nginx/nginx.conf
-fi
+#if ! grep -q "error_log /dev/stdout info;" /etc/nginx/nginx.conf; then
+#  sed -i '/pid\s*\/var\/run\/nginx.pid;/i error_log /dev/stdout info;' /etc/nginx/nginx.conf
+#fi
+#if ! grep -q "access_log /dev/stdout main;" /etc/nginx/nginx.conf; then
+#  sed -i '/sendfile\s*on;/i\    access_log /dev/stdout main;' /etc/nginx/nginx.conf
+#fi
+
+# step1 替换constant.js中的变量
+/bin/sh /scripts/constant.sh
+# step2 替换constant-mount.js中的变量
+/bin/sh /scripts/constant-mount.sh
+# step3【可选】 替换constant-ext.js中的变量
+/bin/sh /scripts/constant-ext.sh
+# step4【可选】 为emby增加embyAddExternalUrl
+/bin/sh /scripts/embyAddExternalUrl.sh
 
 # 替换http、https端口
 sed -i "s/8091/${NGINX_PORT}/g" "/etc/nginx/conf.d/includes/http.conf"
@@ -101,4 +89,4 @@ else
 fi
 
 # 后台启动nginx
-nginx -g "daemon off;"
+nginx -g "daemon off;" 

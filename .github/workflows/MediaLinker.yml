@@ -1,10 +1,12 @@
 name: MediaLinker Builder
 on:
   workflow_dispatch:
-#  push:
-#    branches:
-#      - main
-
+  push:
+    branches:
+      - main
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 jobs:
   Docker-build:
     runs-on: ubuntu-latest
@@ -22,23 +24,9 @@ jobs:
       - name: Login DockerHub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
 
-      - name: MediaLinker-ALl
+      - name: ZMediaLinker
         run: |
-          docker buildx build --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKER_USERNAME }}/medialinker:latest -f Dockerfile . --push
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-
-      - name: MediaLinker-Emby
-        run: |
-          docker buildx build --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKER_USERNAME }}/medialinker:emby -f Dockerfile-emby . --push
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-
-      - name: MediaLinker-Plex
-        run: |
-          docker buildx build --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKER_USERNAME }}/medialinker:plex -f Dockerfile-plex . --push
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          docker buildx build --platform linux/amd64,linux/arm64 -t $DOCKERHUB_USERNAME/zmedialinker:latest -t $DOCKERHUB_USERNAME/zmedialinker:$(cat config/envs |grep SOURCE_COMMIT_ID |awk -F '=' '{print $2}') -f Dockerfile . --push

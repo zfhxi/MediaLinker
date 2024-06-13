@@ -1,30 +1,36 @@
-[![Github][Github-image]][Github-url]
-[![commit activity][commit-activity-image]][commit-activity-url]
-[![docker version][docker-version-image]][docker-version-url]
-[![docker pulls][docker-pulls-image]][docker-pulls-url]
-[![docker stars][docker-stars-image]][docker-stars-url]
-[![docker image size][docker-image-size-image]][docker-image-size-url]
 
-[Github-image]: https://img.shields.io/static/v1?label=Github&message=MediaLinker&color=brightgreen
-[Github-url]: https://github.com/thsrite/MediaLinker
-[commit-activity-image]: https://img.shields.io/github/commit-activity/m/thsrite/MediaLinker
-[commit-activity-url]: https://github.com/thsrite/MediaLinker
-[docker-version-image]: https://img.shields.io/docker/v/thsrite/medialinker?style=flat
-[docker-version-url]: https://hub.docker.com/r/thsrite/medialinker/tags?page=1&ordering=last_updated
-[docker-pulls-image]: https://img.shields.io/docker/pulls/thsrite/medialinker?style=flat
-[docker-pulls-url]: https://hub.docker.com/r/thsrite/medialinker
-[docker-stars-image]: https://img.shields.io/docker/stars/thsrite/medialinker?style=flat
-[docker-stars-url]: https://hub.docker.com/r/thsrite/medialinker
-[docker-image-size-image]: https://img.shields.io/docker/image-size/thsrite/medialinker?style=flat
-[docker-image-size-url]: https://hub.docker.com/r/thsrite/medialinker
+原作者仓库：<https://github.com/thsrite/MediaLinker>
 
-原作者仓库：https://github.com/chen3861229/embyExternalUrl 
-
-本项目为大佬项目的docker版本，旨在简化部署方式、方便更新。
+本项目为自用版。
 
 非容器运行问题请去原作者仓库提issue，请给原作者大佬点赞！
 
-### 环境配置
+### 部署方式
+
+#### docker部署
+
+```yaml
+version: "3.3"
+services:
+  zmedialinker:
+    container_name: zmedialinker
+    network_mode: host
+    environment:
+      - TZ=Asia/Shanghai
+      - NGINX_PORT=8091
+    volumes:
+      - ./config:/config # 你需要修改的变量目录
+    image: zfhxi/zmedialinker:latest
+networks: {}
+```
+
+第一次创建容器并启动后，请修改`./config/envs`中的变量，然后重启容器。
+
+
+### 部分环境配置
+
+主要的变量都在base_config中，如下是原仓库中对环境变量的介绍。本仓库并未测试开启SSL功能，如需开启SSL，请自行添加相应的环境变量并测试。
+
 | 参数            | 是否必填    | 说明                                                                                               |
 |---------------|:--------|--------------------------------------------------------------------------------------------------|
 | AUTO_UPDATE   | 可选      | 重启自动更新，true/false，默认`false`                                                                      |
@@ -38,27 +44,4 @@
 | 证书路径        | 开启SSL必填 | 映射到宿主机/opt/fullchain.pem                                                                         |
 | 证书路径        | 开启SSL必填 | 映射到宿主机/opt/privkey.pem                                                                           |
 | 证书申请命令     | 开启SSL必填 | 映射到宿主机/opt/ssl [ssl示例](config%2Fssl)                                                             |
-| 配置文件        | `必填`    | 映射到宿主机/opt/constant.js [emby示例](config%2Femby%2Fconstant.js) [plex示例](config%2Fplex%2Fconstant.js) |
 
-### 部署方式
-
-#### docker部署
-/home/MediaLinker/下创建证书文件、配置文件constant.js [emby示例](config%2Femby%2Fconstant.js) [plex示例](config%2Fplex%2Fconstant.js)
-
-```
-  docker run -d \
-    --name MediaLinker \
-    -p 8091:8091 \
-    -v /home/MediaLinker/:/opt/ \
-    thsrite/medialinker:latest
-```
-
-#### [docker-compose](deploy/docker-compose.yml)
-
-#### [unraid模版](deploy/my-MediaLinker.xml)
-
-### 注意事项
-
-- 如开启自动更新，且本地访问github困难，可能会导致更新失败，建议配置`HTTPS_PROXY`环境变量
-- 本容器日志会存储到/opt/MediaLinker.log，请注意日志大小，定期清理
-- 应某火柴要求，docker分为三个tag：latest为整合版本，默认SERVER=emby可随时切换emby/plex；emby默认SERVER=emby；plex默认SERVER=plex
