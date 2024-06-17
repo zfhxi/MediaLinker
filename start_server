@@ -17,6 +17,15 @@ if [[ "${AUTO_UPDATE}" = "true" ]];then
     echo "Source code has been switched to commit id: $SOURCE_COMMIT_ID!"
   fi
   echo "The main program update is complete."
+else
+    # 如果不开启自动更新，但是更新了镜像，镜像中的/template/config/envs是最新版，/config/envs是旧版的
+    # 更新/config/envs中的SOURCE_COMMIT_ID
+    TEMPLATE_COMMIT_ID=$(cat /template/config/envs |grep SOURCE_COMMIT_ID |awk -F '=' '{print $2}')
+    CUR_COMMIT_ID=$(cat /config/envs |grep SOURCE_COMMIT_ID |awk -F '=' '{print $2}')
+    if [[ "$TEMPLATE_COMMIT_ID" != "$CUR_COMMIT_ID" ]];then
+        sed -i 's#^SOURCE_COMMIT_ID.*#SOURCE_COMMIT_ID='"${TEMPLATE_COMMIT_ID}"'#g' /config/envs
+    fi
+
 fi
 
 # 软链接ngx_http_js_module.so
