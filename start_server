@@ -9,7 +9,7 @@ fi
 source /config/envs
 # 自动更新
 if [[ "${AUTO_UPDATE}" = "true" ]];then
-  echo "\n=> The automatic update is detected, and the main program is being updated..."
+  echo "=> The automatic update is detected, and the main program is being updated..."
   cd /embyExternalUrl && git pull
   # 如果指定了commit id，那么使用对应的代码
   if test -n "$SOURCE_COMMIT_ID"; then
