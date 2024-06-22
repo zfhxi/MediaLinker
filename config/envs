@@ -29,4 +29,4 @@ ALIST_PUBLIC_ADDR=https://alist.yourdomain.com # alist 公网地址
 # 2: 不同尺寸设备共用一份缓存,空间占用最大,移除 emby 的缩放参数,直接原图高清显示
 EMBY_IMAGE_CACHE_POLICY=2 # only for emby，使用plex时请注释或删除该行
 
-SOURCE_COMMIT_ID=3ed7858
+SOURCE_COMMIT_ID=c116dd2
