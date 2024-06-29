@@ -3,30 +3,29 @@
 # shellcheck disable=SC2016
 # shellcheck disable=SC2154
 
-# base config
-REPO_URL=https://github.com/chen3861229/embyExternalUrl
-SSL_ENABLE=false
-AUTO_UPDATE=false
-
-# media server config
+# media server config，需要修改
 SERVER=emby
 SERVER_HOST=http://127.0.0.1:8096
 EMBY_API_KEY=1xxxxxxxxxxxxxxxxxxxxxxxxxxxxd # only for emby， 使用plex时请注释或删除该行
 EMBY_PUBLIC_ADDR=https://emby.yourdomain.com # only for emby，使用plex时请注释或删除该行
-MOUNT_PATH=/mnt
+MOUNT_PATH=/mnt # 多余路径，如/mnt/115/xxx.mkv转换到https://alist.xxx.com/d/115/xxx.mkv时，相对于https://xxxx/d/的多余路径为/mnt
 
-# alist config
+# alist config，需要修改
 ALIST_ADDR=http://127.0.0.1:5244
 ALIST_TOKEN=wsdfsaafsxxxxx
 ALIST_SIGNENABLE=false # alist 是否启用了 sign
 ALIST_PUBLIC_ADDR=https://alist.yourdomain.com # alist 公网地址
 
 
-# just only for emby!!!
+# just only for emby!!!，使用emby时需要修改
 # 图片缓存策略,包括主页、详情页、图片库的原图,路由器 nginx 请手动调小 conf 中 proxy_cache_path 的 max_size
 # 0: 不同尺寸设备共用一份缓存,先访问先缓存,空间占用最小但存在小屏先缓存大屏看的图片模糊问题
 # 1: 不同尺寸设备分开缓存,空间占用适中,命中率低下,但契合 emby 的图片缩放处理
 # 2: 不同尺寸设备共用一份缓存,空间占用最大,移除 emby 的缩放参数,直接原图高清显示
 EMBY_IMAGE_CACHE_POLICY=2 # only for emby，使用plex时请注释或删除该行
 
-SOURCE_COMMIT_ID=c116dd2
+# base config，一般不需要修改
+REPO_URL=https://github.com/chen3861229/embyExternalUrl
+SSL_ENABLE=false
+AUTO_UPDATE=false
+SOURCE_COMMIT_ID=68039df
