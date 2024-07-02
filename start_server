@@ -57,6 +57,8 @@ eval "cp -rf /embyExternalUrl/${SERVER}2Alist/nginx/nginx.conf /etc/nginx/nginx.
 /bin/sh /scripts/constant-ext.sh
 # step4【可选】 为emby增加embyAddExternalUrl
 /bin/sh /scripts/embyAddExternalUrl.sh
+# step5【可选】 为emby/plex增加mediaPathMapping
+/bin/sh /scripts/constant-pro.sh
 
 # 替换http、https端口
 sed -i "s/8091/${NGINX_PORT}/g" "/etc/nginx/conf.d/includes/http.conf"

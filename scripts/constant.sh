@@ -23,5 +23,5 @@ if test -z "$MOUNT_PATH" ; then
   echo "MOUNT_PATH is empty!"
 else
   echo "MOUNT_PATH is $MOUNT_PATH!"
-  sed -i 's#^const '"${SERVER}"'MountPath.*#const '"${SERVER}"'MountPath = '"[\"${MOUNT_PATH}\"];"'#g' /etc/nginx/conf.d/constant.js
+  sed -i 's#^const mediaMountPath.*#const mediaMountPath = '"[\"${MOUNT_PATH}\"];"'#g' /etc/nginx/conf.d/constant.js
 fi
