@@ -17,7 +17,7 @@ ALIST_SIGNENABLE=false # alist 是否启用了 sign
 ALIST_PUBLIC_ADDR=https://alist.yourdomain.com # alist 公网地址
 
 
-# just only for emby!!!，使用emby时需要修改
+# just only for emby!!!，使用emby时才可能需要修改
 # 图片缓存策略,包括主页、详情页、图片库的原图,路由器 nginx 请手动调小 conf 中 proxy_cache_path 的 max_size
 # 0: 不同尺寸设备共用一份缓存,先访问先缓存,空间占用最小但存在小屏先缓存大屏看的图片模糊问题
 # 1: 不同尺寸设备分开缓存,空间占用适中,命中率低下,但契合 emby 的图片缩放处理
@@ -25,6 +25,11 @@ ALIST_PUBLIC_ADDR=https://alist.yourdomain.com # alist 公网地址
 EMBY_IMAGE_CACHE_POLICY=0 # only for emby，使用plex时请注释或删除该行
 
 # enhanced config，一般不需要修改
+RouteRule=$(cat <<-END
+  // ["proxy", "filePath", 0, "/xxx/cd2/9kilogram/xxx1" ], // 复杂的资源命名会导nginx致劫持失败，
+  // ["proxy", "filePath", 0, "/xxx/cd2/9kilogram/xxx2" ], // 原因：cd2中获取的路径和alist路径存在差异。直接用服务器中转。
+END
+)
 MediaPathMapping=$(cat <<-END
   // [0, 0, "\", "/"], // win 平台打开此项
   // [0, 0, "/Alist", ""], //去除路径中的/Alist
@@ -36,4 +41,4 @@ END
 REPO_URL=https://github.com/chen3861229/embyExternalUrl
 SSL_ENABLE=false
 AUTO_UPDATE=false
-SOURCE_COMMIT_ID=d59ab45
+SOURCE_COMMIT_ID=96e6f2a
