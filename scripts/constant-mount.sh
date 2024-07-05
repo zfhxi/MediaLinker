@@ -3,7 +3,7 @@
 # shellcheck disable=SC2016
 # shellcheck disable=SC2154
 source /config/envs
-echo "\n=> Modifying the constant-mount.js for ${SERVER}2Alist..."
+echo -e "\n=> Modifying the constant-mount.js for ${SERVER}2Alist..."
 # alist内网地址
 if test -z "$ALIST_ADDR" ; then 
   echo "ALIST_ADDR is empty!"

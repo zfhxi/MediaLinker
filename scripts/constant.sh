@@ -3,7 +3,7 @@
 # shellcheck disable=SC2016
 # shellcheck disable=SC2154
 source /config/envs
-echo "\n=> Modifying the constant.js for ${SERVER}2Alist..."
+echo -e "\n=> Modifying the constant.js for ${SERVER}2Alist..."
 # host
 if test -z "$SERVER_HOST" ; then 
   echo "SERVER_HOST is empty!"

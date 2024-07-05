@@ -4,7 +4,7 @@
 # shellcheck disable=SC2154
 source /config/envs
 if [ "${SERVER}" = "emby" ] && test -n "$EMBY_PUBLIC_ADDR" ; then
-  echo "\n=> Adding the embyAddExternalUrl for emby..."
+  echo -e "\n=> Adding the embyAddExternalUrl for emby..."
   cp /embyExternalUrl/embyAddExternalUrl/nginx/conf.d/externalUrl.js /etc/nginx/conf.d/
   sed -i '/js_path \/etc\/nginx\/conf.d.*$/a js_import addExternalUrl from externalUrl.js;' /etc/nginx/conf.d/emby.conf
   tmp_str=$(cat /embyExternalUrl/embyAddExternalUrl/nginx/conf.d/emby.conf | grep -Pzo ".*## addExternalUrl SETTINGS ##(\n|.)*## addExternalUrl SETTINGS ##")
