@@ -26,8 +26,7 @@ EMBY_IMAGE_CACHE_POLICY=0 # only for emby，使用plex时请注释或删除该�
 
 # enhanced config，一般不需要修改
 RouteRule=$(cat <<-END
-  // ["proxy", "filePath", 0, "/xxx/cd2/9kilogram/xxx1" ], // 复杂的资源命名会导nginx致劫持失败，
-  // ["proxy", "filePath", 0, "/xxx/cd2/9kilogram/xxx2" ], // 原因：cd2中获取的路径和alist路径存在差异。直接用服务器中转。
+  // ["proxy", "filePath", 0, "/xxx/cd2/复杂路径/xxx1" ], // 复杂的资源命名会导nginx致劫持失败，原因：cd2中获取的路径和alist路径存在差异。不建议劫持。
 END
 )
 MediaPathMapping=$(cat <<-END

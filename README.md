@@ -25,10 +25,10 @@ services:
 networks: {}
 ```
 
-第一次创建容器并启动后，请修改`./config/envs`中的变量，然后重启容器。
+第一次创建容器并启动后，请修改`./config/envs`中的变量，然后重启容器（envs.template只是一个示例模板，不用修改）。
 
 > 注：
-> - 在升级镜像时，`./config/envs`不会被覆盖，建议比对`./config/envs`和本项目中的`config/envs`的差异，按需来添加新版镜像带来的环境变量（比如RouteRule、MediaPathMapping）。
+> - 在升级镜像时，`./config/envs`不会被覆盖，建议比对`envs`和`envs.template`的差异，按需来添加新版镜像带来的环境变量（比如RouteRule、MediaPathMapping）。
 > - emby和jellyfin是同样的配置方式，只需要把部署的jellyfin当作emby来配合本项目使用。
 
 ### TODO

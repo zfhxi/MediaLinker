@@ -2,6 +2,7 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2016
 # shellcheck disable=SC2154
+cp /template/config/envs /config/envs.template
 if [ ! -e "/config/envs" ]; then
     cp /template/config/envs /config/envs
 fi
