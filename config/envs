@@ -40,4 +40,4 @@ END
 REPO_URL=https://github.com/chen3861229/embyExternalUrl
 SSL_ENABLE=false
 AUTO_UPDATE=false
-SOURCE_COMMIT_ID=96e6f2a
+SOURCE_COMMIT_ID=1921b06

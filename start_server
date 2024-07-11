@@ -75,6 +75,10 @@ if [ "${SSL_ENABLE}" = "true" ]; then
       d
   }' /etc/nginx/conf.d/${SERVER}.conf
   echo "SSL is enabled, the https.conf file has been included."
+  # 拷贝一份ssl脚本
+  if [ ! -e "/opt/ssl.template" ]; then
+    cp /template/config/ssl /opt/ssl.template
+  fi
 
   # SSL_DOMAIN、SSL变量替换
   cd / && /bin/sh /check_certificate
