@@ -8,7 +8,7 @@ check_certificate() {
   # 检查证书是否被 Let's Encrypt 成功签发
   if ls /.lego/certificates | grep "${SSL_DOMAIN}"; then
       if [ -e /.lego/certificates/"${SSL_DOMAIN}".crt ] && [ -e /.lego/certificates/"${SSL_DOMAIN}".key ]; then
-          echo 'The certificate has been successfully issued, and the service is being restarted.'
+          pretty_echo OK '证书签发成功!'
           # 删除原证书
           rm -rf /opt/fullchain.pem /opt/privkey.key
           # 将证书复制到特定目录
@@ -21,16 +21,16 @@ check_certificate() {
 
           # 判断nginx是否正在运行，如果正在运行重启 nginx
           if pgrep nginx >/dev/null; then
-              echo "Nginx service is running, reloading..."
+              pretty_echo WR "Nginx服务重载中..."
               nginx -s reload
-              echo 'Nginx service reload success'
+              pretty_echo OK "Nginx服务重载成功!"
           fi
       else
-          echo 'The certificate file does not exist, and the certificate issuance has failed.'
+          pretty_echo ER "证书签发失败!"
           exit 1
       fi
   else
-      echo 'Certificate issuance failed.'
+      pretty_echo ER "证书签发失败!"
       exit 1
   fi
 }
@@ -47,14 +47,14 @@ if [ "${SSL_ENABLE}" = "true" ]; then
           expiry_date=$(openssl x509 -enddate -noout -in /opt/fullchain.pem | cut -d= -f2 | awk '{sub(/ GMT/, ""); print}' | xargs -I {} date -d "{}" +%s)
           # 计算证书到期的天数
           days_until_expiry=$(( (expiry_date - current_date) / 86400 ))
-          echo "Certificate expiry date: $days_until_expiry days from now."
+          pretty_echo OK "证书剩余天数: $days_until_expiry 天。"
 
           # 判断证书是否在 30 天内到期
           if [ $days_until_expiry -le 30 ]; then
-              echo "The certificate will expire within 30 days, start certificate renewal."
+              pretty_echo WR "证书将在30天内到期，开始证书续订..."
               check_certificate
           else
-              echo "The certificate is still valid, no need for renewal."
+              pretty_echo IN "证书仍然有效，无需续订。"
               # 判断nginx证书是否正确配置
               if [ ! -e /etc/nginx/conf.d/cert/fullchain.pem ] || [ ! -e /etc/nginx/conf.d/cert/privkey.key ]; then
                   # 软连接证书到 nginx 配置目录
@@ -64,14 +64,15 @@ if [ "${SSL_ENABLE}" = "true" ]; then
               fi
           fi
       else
-          echo "Start applying for domain certificate."
+          pretty_echo IN "开始申请域名证书..."
           check_certificate
       fi
   else
-      echo "SSL script does not exist."
+      pretty_echo ER "SSL证书申请脚本不存在，退出程序。"
       exit 1
   fi
 else
-    echo "SSL is not enabled.Skip certificate check."
+    pretty_echo IN "内置SSL已被禁用，跳过证书检查！"
+
 fi
 

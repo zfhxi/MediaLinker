@@ -7,17 +7,17 @@ if [ ! -e "/config/envs" ]; then
     cp /template/config/envs /config/envs
 fi
 
-source /config/envs
+source /scripts/setup.sh
 # 自动更新
 if [[ "${AUTO_UPDATE}" = "true" ]];then
-  echo "=> The automatic update is detected, and the main program is being updated..."
+  pretty_echo IN "自动更新已开启..."
   cd /embyExternalUrl && git pull
   # 如果指定了commit id，那么使用对应的代码
   if test -n "$SOURCE_COMMIT_ID"; then
     git checkout $SOURCE_COMMIT_ID
-    echo "Source code has been switched to commit id: $SOURCE_COMMIT_ID!"
+    pretty_echo OK "源码被切换到commit: $SOURCE_COMMIT_ID."
   fi
-  echo "The main program update is complete."
+  pretty_echo IN "更新完成！"
 else
     # 如果不开启自动更新，但是更新了镜像，镜像中的/template/config/envs是最新版，/config/envs是旧版的
     # 更新/config/envs中的SOURCE_COMMIT_ID
@@ -34,21 +34,13 @@ if [ ! -e "/etc/nginx/modules/ngx_http_js_module.so" ]; then
   ln -s /usr/lib/nginx/modules/ngx_http_js_module.so /etc/nginx/modules/ngx_http_js_module.so
 fi
 
-echo "The ${SERVER} service is detected, and the configuration file is being linked...."
+pretty_echo IN "正在${SERVER} media server上启动${SERVER}2Alist...."
 # 删除原有配置文件
 rm -rf /etc/nginx/conf.d /etc/nginx/nginx.conf
 # 重新拷贝配置文件
 eval "cp -rf /embyExternalUrl/${SERVER}2Alist/nginx/conf.d /etc/nginx/conf.d"
 eval "cp -rf /embyExternalUrl/${SERVER}2Alist/nginx/nginx.conf /etc/nginx/nginx.conf"
 
-
-# nginx日志输出到stdout
-#if ! grep -q "error_log /dev/stdout info;" /etc/nginx/nginx.conf; then
-#  sed -i '/pid\s*\/var\/run\/nginx.pid;/i error_log /dev/stdout info;' /etc/nginx/nginx.conf
-#fi
-#if ! grep -q "access_log /dev/stdout main;" /etc/nginx/nginx.conf; then
-#  sed -i '/sendfile\s*on;/i\    access_log /dev/stdout main;' /etc/nginx/nginx.conf
-#fi
 
 # step1 替换constant.js中的变量
 /bin/sh /scripts/constant.sh
@@ -62,19 +54,22 @@ eval "cp -rf /embyExternalUrl/${SERVER}2Alist/nginx/nginx.conf /etc/nginx/nginx.
 /bin/sh /scripts/constant-pro.sh
 
 # 替换http、https端口
-sed -i "s/8091/${NGINX_PORT}/g" "/etc/nginx/conf.d/includes/http.conf"
+sed -i.bak "s/8091/${NGINX_PORT}/g" "/etc/nginx/conf.d/includes/http.conf"
+cmp_two_files "/etc/nginx/conf.d/includes/http.conf" "/etc/nginx/conf.d/includes/http.conf.bak" "NGINX_PORT => ${NGINX_PORT}"
 if [ -n "${NGINX_SSL_PORT}" ]; then
-  sed -i "s/8095/${NGINX_SSL_PORT}/g" "/etc/nginx/conf.d/includes/https.conf"
+  sed -i.bak "s/8095/${NGINX_SSL_PORT}/g" "/etc/nginx/conf.d/includes/https.conf"
+  cmp_two_files "/etc/nginx/conf.d/includes/http.conf" "/etc/nginx/conf.d/includes/https.conf.bak" "NGINX_SSL_PORT => ${NGINX_SSL_PORT}"
 fi
 
 # SSL开启
 if [ "${SSL_ENABLE}" = "true" ]; then
-  sed -i '/#\s*include \/etc\/nginx\/conf.d\/includes\/https\.conf;/ {
+  sed -i.bak '/#\s*include \/etc\/nginx\/conf.d\/includes\/https\.conf;/ {
       s/^#//;
       a\include \/etc\/nginx\/conf.d\/includes\/https.conf;
       d
   }' /etc/nginx/conf.d/${SERVER}.conf
-  echo "SSL is enabled, the https.conf file has been included."
+  cmp_two_files "/etc/nginx/conf.d/${SERVER}.conf" "/etc/nginx/conf.d/${SERVER}.conf.bak" ${SERVER}.conf中的https.conf导入
+  pretty_echo IN "内置SSL启用中..."
   # 拷贝一份ssl脚本
   if [ ! -e "/opt/ssl.template" ]; then
     cp /template/config/ssl /opt/ssl.template
@@ -83,7 +78,7 @@ if [ "${SSL_ENABLE}" = "true" ]; then
   # SSL_DOMAIN、SSL变量替换
   cd / && /bin/sh /check_certificate
   if [ $? -ne 0 ]; then
-    echo "In SSL mode, certificate verification failed, exiting the program."
+    pretty_echo ER "SSL证书校验失败，退出程序。"
     exit 1
   fi
 
@@ -94,14 +89,15 @@ if [ "${SSL_ENABLE}" = "true" ]; then
   # 重启cron服务使修改生效
   pkill -f crond
   /usr/sbin/crond
-  echo "The scheduled task '${SSL_CRON} cd / && /bin/sh /check_certificate' has been written."
+  pretty_echo OK "定时任务'${SSL_CRON} cd / && /bin/sh /check_certificate'已被写入."
 else
-    sed -i '/include \/etc\/nginx\/conf.d\/includes\/https\.conf;/ {
+    sed -i.bak '/include \/etc\/nginx\/conf.d\/includes\/https\.conf;/ {
         s/.*//;
         a\#include \/etc\/nginx\/conf.d\/includes\/https.conf;
         d
     }' /etc/nginx/conf.d/${SERVER}.conf
-    echo "SSL is disabled, the https.conf file has been commented out."
+    cmp_two_files "/etc/nginx/conf.d/${SERVER}.conf" "/etc/nginx/conf.d/${SERVER}.conf.bak" ${SERVER}.conf中的https.conf导入
+    pretty_echo WR "内置SSL已被禁用！"
 fi
 
 # 后台启动nginx

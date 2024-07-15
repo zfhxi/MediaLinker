@@ -2,22 +2,22 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2016
 # shellcheck disable=SC2154
-source /config/envs
-echo -e "\n=> Modifying the constant-pro.js for ${SERVER}2Alist..."
+source /scripts/setup.sh
+pretty_echo IN "修改constant-pro.js..."
 if test -z "$MediaPathMapping" ; then 
-    echo "MediaPathMapping is empty!"
+    pretty_echo WR "MediaPathMapping为空!"
 else
-    echo -e "MediaPathMapping is:\n$MediaPathMapping"
+    pretty_echo IN "MediaPathMapping:\n$MediaPathMapping"
     # reference: https://unix.stackexchange.com/questions/534755/how-to-append-a-variable-in-a-text-file-after-a-certain-word
-    # sed -i '/const mediaPathMapping/r/dev/stdin' /etc/nginx/conf.d/config/constant-pro.js <<<"$MediaPathMapping"
-    ( set -f; IFS=$'\n'; printf '%s\n' $MediaPathMapping ) | sed -i '/const mediaPathMapping/r/dev/stdin' /etc/nginx/conf.d/config/constant-pro.js 
+    ( set -f; IFS=$'\n'; printf '%s\n' $MediaPathMapping ) | sed -i.bak '/const mediaPathMapping/r/dev/stdin' /etc/nginx/conf.d/config/constant-pro.js 
+    cmp_two_files /etc/nginx/conf.d/config/constant-ext.js /etc/nginx/conf.d/config/constant-pro.js mediaPathMapping
 fi
 
 if test -z "$RouteRule" ; then 
-    echo "RouteRule is empty!"
+    pretty_echo WR "RouteRule为空!"
 else
-    echo -e "RouteRule is:\n$RouteRule"
+    pretty_echo IN "RouteRule is:\n$RouteRule"
     # reference: https://unix.stackexchange.com/questions/534755/how-to-append-a-variable-in-a-text-file-after-a-certain-word
-    # sed -i '/const mediaPathMapping/r/dev/stdin' /etc/nginx/conf.d/config/constant-pro.js <<<"$MediaPathMapping"
-    ( set -f; IFS=$'\n'; printf '%s\n' $RouteRule ) | sed -i '/const routeRule/r/dev/stdin' /etc/nginx/conf.d/config/constant-pro.js 
+    ( set -f; IFS=$'\n'; printf '%s\n' $RouteRule ) | sed -i.bak '/const routeRule/r/dev/stdin' /etc/nginx/conf.d/config/constant-pro.js 
+    cmp_two_files /etc/nginx/conf.d/config/constant-ext.js /etc/nginx/conf.d/config/constant-pro.js routeRule
 fi

@@ -27,12 +27,12 @@ COPY start_server /start_server
 COPY check_certificate /check_certificate
 COPY config/logrotate.conf /etc/logrotate.d/medialinker
 
-RUN chmod +x /entrypoint /start_server /check_certificate
-RUN mkdir /template
+RUN chmod +x /entrypoint /start_server /check_certificate && \
+    mkdir /template
 COPY config /template/config
 COPY scripts /scripts
-RUN chmod -R +x /template /scripts 
-RUN apk add --no-cache grep
-RUN cd /embyExternalUrl && git checkout $(cat /template/config/envs |grep SOURCE_COMMIT_ID |awk -F '=' '{print $2}')
+RUN chmod -R +x /template /scripts && \
+    apk add --no-cache grep && \
+    cd /embyExternalUrl && git checkout $(cat /template/config/envs |grep SOURCE_COMMIT_ID |awk -F '=' '{print $2}')
 
 ENTRYPOINT ["/bin/sh", "/entrypoint"]

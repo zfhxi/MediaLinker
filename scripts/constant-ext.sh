@@ -2,14 +2,14 @@
 # shellcheck shell=bash
 # shellcheck disable=SC2016
 # shellcheck disable=SC2154
-source /config/envs
+source /scripts/setup.sh
 if [ "${SERVER}" = "emby" ]; then
-  echo -e "\n=> Modifying the constant-ext.js for ${SERVER}2Alist..."
+  pretty_echo IN "修改constant-ext.js..."
   # imageCachePolicy for emby
   if test -z "$EMBY_IMAGE_CACHE_POLICY" ; then 
-    echo "EMBY_IMAGE_CACHE_POLICY is empty!"
+    pretty_echo WR "EMBY_IMAGE_CACHE_POLICY为空!"
   else
-    echo "EMBY_IMAGE_CACHE_POLICY is $EMBY_IMAGE_CACHE_POLICY!"
-    sed -i 's#^const imageCachePolicy.*#const imageCachePolicy = '"${EMBY_IMAGE_CACHE_POLICY};"'#g' /etc/nginx/conf.d/config/constant-mount.js
+    sed -i.bak 's#^const imageCachePolicy.*#const imageCachePolicy = '"${EMBY_IMAGE_CACHE_POLICY};"'#g' /etc/nginx/conf.d/config/constant-mount.js
+    cmp_two_files /etc/nginx/conf.d/config/constant-ext.js /etc/nginx/conf.d/config/constant-mount.js "imageCachePolicy => $EMBY_IMAGE_CACHE_POLICY"
   fi
 fi

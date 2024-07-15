@@ -1,7 +1,4 @@
 #!/bin/bash
-# shellcheck shell=bash
-# shellcheck disable=SC2016
-# shellcheck disable=SC2154
 
 # media server config，需要修改
 SERVER=emby
@@ -40,4 +37,4 @@ END
 REPO_URL=https://github.com/chen3861229/embyExternalUrl
 SSL_ENABLE=false
 AUTO_UPDATE=false
-SOURCE_COMMIT_ID=1921b06
+SOURCE_COMMIT_ID=8c4c753
