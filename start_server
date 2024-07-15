@@ -56,13 +56,13 @@ eval "cp -rf /embyExternalUrl/${SERVER}2Alist/nginx/nginx.conf /etc/nginx/nginx.
 # 替换http、https端口
 sed -i.bak "s/8091/${NGINX_PORT}/g" "/etc/nginx/conf.d/includes/http.conf"
 cmp_two_files "/etc/nginx/conf.d/includes/http.conf" "/etc/nginx/conf.d/includes/http.conf.bak" "NGINX_PORT => ${NGINX_PORT}"
-if [ -n "${NGINX_SSL_PORT}" ]; then
-  sed -i.bak "s/8095/${NGINX_SSL_PORT}/g" "/etc/nginx/conf.d/includes/https.conf"
-  cmp_two_files "/etc/nginx/conf.d/includes/http.conf" "/etc/nginx/conf.d/includes/https.conf.bak" "NGINX_SSL_PORT => ${NGINX_SSL_PORT}"
-fi
 
 # SSL开启
 if [ "${SSL_ENABLE}" = "true" ]; then
+  if [ -n "${NGINX_SSL_PORT}" ]; then
+    sed -i.bak "s/8095/${NGINX_SSL_PORT}/g" "/etc/nginx/conf.d/includes/https.conf"
+    cmp_two_files "/etc/nginx/conf.d/includes/https.conf" "/etc/nginx/conf.d/includes/https.conf.bak" "NGINX_SSL_PORT => ${NGINX_SSL_PORT}"
+  fi
   sed -i.bak '/#\s*include \/etc\/nginx\/conf.d\/includes\/https\.conf;/ {
       s/^#//;
       a\include \/etc\/nginx\/conf.d\/includes\/https.conf;
