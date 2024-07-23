@@ -27,7 +27,6 @@ RouteRule=$(cat <<-END
 END
 )
 MediaPathMapping=$(cat <<-END
-  // [0, 0, "\", "/"], // win 平台打开此项
   // [0, 0, "/Alist", ""], //去除路径中的/Alist
   // [0, 1, "/mnt", ""], //将strm文件中记录的路径中的/mnt移除掉。
 END
@@ -37,4 +36,4 @@ END
 REPO_URL=https://github.com/chen3861229/embyExternalUrl
 SSL_ENABLE=false
 AUTO_UPDATE=false
-SOURCE_COMMIT_ID=8c4c753
+SOURCE_COMMIT_ID=abf11bf
