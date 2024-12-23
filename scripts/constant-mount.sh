@@ -24,7 +24,7 @@ fi
 if test -z "$ALIST_SIGNENABLE" ; then 
   pretty_echo WR "ALIST_SIGNENABLE为空!"
 else
-  sed -i.bak 's#^const alistSignEnable.*#const alistSignEnable = '"\"${ALIST_SIGNENABLE}\";"'#g' /etc/nginx/conf.d/config/constant-mount.js
+  sed -i.bak 's#^const alistSignEnable.*#const alistSignEnable = '"${ALIST_SIGNENABLE};"'#g' /etc/nginx/conf.d/config/constant-mount.js
   cmp_two_files /etc/nginx/conf.d/config/constant-ext.js /etc/nginx/conf.d/config/constant-mount.js "alistSignEnable => $ALIST_SIGNENABLE"
 fi
 

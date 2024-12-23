@@ -20,6 +20,7 @@ services:
       - NGINX_PORT=8091 # 改成你想要的端口
     volumes:
       - ./config:/config # 你需要修改的变量目录
+      - ./emby_cache:/var/cache/nginx/emby # emby缓存目录（封面等)。仅配合emby时需要，配合plex时移除该行。
     image: zfhxi/zmedialinker:latest
     restart: always
 networks: {}
