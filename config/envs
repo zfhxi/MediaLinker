@@ -31,6 +31,12 @@ EMBY_IMAGE_CACHE_POLICY=0 # only for emby，使用plex时请注释或删除该�
 ########################
 # 高级配置，一般不需要修改 #
 ########################
+# Alist链接处理，详细说明请参考 https://github.com/chen3861229/embyExternalUrl/blob/main/emby2Alist/nginx/conf.d/config/constant-mount.js
+ClientSelfAlistRule=$(cat <<-END
+  [2, strHead["115"], alistPublicAddr], // 默认添加的规则
+END
+)
+
 # 路由规则：哪些需要302，哪些需要由本地服务器代理
 # 详细说明请参考 https://github.com/chen3861229/embyExternalUrl/blob/d09f622604ac80c0b08e7102399df5d5164d6c5f/plex2Alist/nginx/conf.d/config/constant-pro.js#L22
 # 如需下面的配置生效，请仅移除行首的"//"

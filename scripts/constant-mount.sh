@@ -36,3 +36,13 @@ else
   cmp_two_files /etc/nginx/conf.d/config/constant-ext.js /etc/nginx/conf.d/config/constant-mount.js "alistPublicAddr => $ALIST_PUBLIC_ADDR"
 fi
 
+# alist链接处理
+if test -z "$ClientSelfAlistRule" ; then 
+    pretty_echo WR "ClientSelfAlistRule为空!"
+else
+    pretty_echo IN "ClientSelfAlistRule is:\n$ClientSelfAlistRule"
+    sed -r -i '/const clientSelfAlistRule/,/];/s/(\s+)\[2, strHead\["115"\], alistPublicAddr\]/\1\/\/ [2, strHead["115"], alistPublicAddr]/' /etc/nginx/conf.d/config/constant-mount.js
+    # reference: https://unix.stackexchange.com/questions/534755/how-to-append-a-variable-in-a-text-file-after-a-certain-word
+    ( set -f; IFS=$'\n'; printf '%s\n' $ClientSelfAlistRule ) | sed -i.bak '/const clientSelfAlistRule/r/dev/stdin' /etc/nginx/conf.d/config/constant-mount.js 
+    cmp_two_files /etc/nginx/conf.d/config/constant-mount.js /etc/nginx/conf.d/config/constant-mount.js.bak clientSelfAlistRule
+fi
