@@ -4,6 +4,7 @@
 # shellcheck disable=SC2154
 source /scripts/setup.sh
 pretty_echo IN "修改constant.js..."
+cp /etc/nginx/conf.d/constant.js /etc/nginx/conf.d/constant.js.ori
 # host
 if test -z "$SERVER_HOST" ; then 
   pretty_echo WR "SERVER_HOST为空!"
